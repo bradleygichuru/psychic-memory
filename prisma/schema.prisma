@@ -1,0 +1,66 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+    provider             = "mysql"
+    url                  = env("DATABASE_URL")
+    referentialIntegrity = "prisma"
+}
+
+model Candidate {
+    CandidateId  String   @id @unique @default(cuid())
+    StudentNo   Int    @unique
+    student Student @relation(fields: [StudentNo],references: [StudentNo])
+    PositionId  String @unique
+    position Position @relation(fields: [PositionId],references: [PositionId])
+    vote Vote?
+}
+
+model Election {
+    ElectionId           String   @id @unique @default(cuid())
+    ElectionName        String
+    ElectionDescription String
+    ElectionDate        DateTime
+    InProgress          Boolean
+    StartedAt           DateTime
+}
+
+model Position {
+    PositionId         String   @id @unique @default(cuid())
+    PositionName        String
+    PositionDescription String
+    candidate Candidate?
+}
+
+model Student {
+    StudentNo   Int    @id @unique
+    FirstName   String
+    SirName     String
+    Email       String @unique
+    Faculty     String
+    Course      String
+    YearOfStudy Int
+    password    String @unique
+    voter       Voter?
+    vote        Vote?
+    candidate Candidate?
+}
+
+model Vote {
+    VoteId        String   @id @unique @default(cuid())
+    StudentNo     Int      @unique
+    CandidateId   String   @unique
+    CastTimeStamp DateTime
+    student       Student  @relation(fields: [StudentNo], references: [StudentNo])
+    candidate Candidate @relation(fields: [CandidateId],references: [CandidateId])
+}
+
+model Voter {
+    VoterId         String   @id @unique @default(cuid())
+    StudentNo      Int      @unique
+    student        Student  @relation(fields: [StudentNo], references: [StudentNo])
+    VotingStatus   Boolean
+    LoginTimeStamp DateTime
+}
