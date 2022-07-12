@@ -62,5 +62,5 @@ model Voter {
     StudentNo      Int      @unique
     student        Student  @relation(fields: [StudentNo], references: [StudentNo])
     VotingStatus   Boolean
-    LoginTimeStamp DateTime
+    LoginTimeStamp String
 }
