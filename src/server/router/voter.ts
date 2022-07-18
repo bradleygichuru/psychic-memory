@@ -1,7 +1,7 @@
 import { createRouter } from "./context";
 import { z } from "zod";
 import { verify } from "jsonwebtoken";
-
+//TODO document
 const date = new Date();
 const voterRouter = createRouter()
   .mutation("registerVoter", {

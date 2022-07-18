@@ -5,6 +5,7 @@ import { off } from "process";
 import { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { trpc } from "../../utils/trpc";
+//TODO document
 type formInput = {
   studentNo: number;
   password: string;

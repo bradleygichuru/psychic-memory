@@ -11,6 +11,7 @@ import { object } from "zod";
 
 const Home: NextPage = () => {
   const [token,setToken] = useState("");
+  const [isAdmin,setIsAdmin] = useState("")
   const [isVoter,setIsVoter] = useState(false);
   const [voter,setVoter] = useState<(Voter & {
     student: Student;

@@ -9,17 +9,49 @@ datasource db {
     referentialIntegrity = "prisma"
 }
 
+model Student {
+    StudentNo   Int        @id @unique
+    FirstName   String
+    SirName     String
+    Email       String     @unique
+    Faculty     String
+    Course      String
+    YearOfStudy Int
+    password    String     @unique
+    voter       Voter?
+    candidate   Candidate?
+}
+
 model Candidate {
     CandidateId  String   @id @unique @default(cuid())
-    StudentNo   Int    @unique
-    student Student @relation(fields: [StudentNo],references: [StudentNo])
-    PositionId  String @unique
-    position Position @relation(fields: [PositionId],references: [PositionId])
-    vote Vote?
+    StudentNo    Int      @unique
+    PositionName String
+    student      Student  @relation(fields: [StudentNo], references: [StudentNo])
+    position     Position @relation(fields: [PositionName], references: [PositionName], onDelete: Cascade, onUpdate: Cascade)
+    vote         Vote?
+}
+
+model Position {
+    PositionId          String      @id @unique @default(cuid())
+    PositionName        String      @unique
+    PositionDescription String
+    candidate           Candidate[] //TODO rethink how candidates votes and position will be related to each other to avoid complexity
+    votes               Vote[]
+}
+
+model Vote {
+    VoteId        String    @id @unique @default(cuid())
+    PositionId    String    @unique
+    VoterId       String    @unique
+    CandidateId   String    @unique
+    CastTimeStamp DateTime  @default(now())
+    position      Position  @relation(fields: [PositionId], references: [PositionId])
+    voter         Voter     @relation(fields: [VoterId], references: [VoterId])
+    candidate     Candidate @relation(fields: [CandidateId], references: [CandidateId], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model Election {
-    ElectionId           String   @id @unique @default(cuid())
+    ElectionId          String   @id @unique @default(cuid())
     ElectionName        String
     ElectionDescription String
     ElectionDate        DateTime
@@ -27,40 +59,18 @@ model Election {
     StartedAt           DateTime
 }
 
-model Position {
-    PositionId         String   @id @unique @default(cuid())
-    PositionName        String
-    PositionDescription String
-    candidate Candidate?
-}
-
-model Student {
-    StudentNo   Int    @id @unique
-    FirstName   String
-    SirName     String
-    Email       String @unique
-    Faculty     String
-    Course      String
-    YearOfStudy Int
-    password    String @unique
-    voter       Voter?
-    vote        Vote?
-    candidate Candidate?
-}
-
-model Vote {
-    VoteId        String   @id @unique @default(cuid())
-    StudentNo     Int      @unique
-    CandidateId   String   @unique
-    CastTimeStamp DateTime
-    student       Student  @relation(fields: [StudentNo], references: [StudentNo])
-    candidate Candidate @relation(fields: [CandidateId],references: [CandidateId])
-}
-
 model Voter {
-    VoterId         String   @id @unique @default(cuid())
-    StudentNo      Int      @unique
-    student        Student  @relation(fields: [StudentNo], references: [StudentNo])
+    VoterId        String  @id @unique @default(cuid())
+    StudentNo      Int     @unique
+    student        Student @relation(fields: [StudentNo], references: [StudentNo])
     VotingStatus   Boolean
     LoginTimeStamp String
+    votes          Vote[] //TODO ensure a voter does not cast two votes for one position 
+}
+
+model Admin {
+    AdminId   String @id @unique @default(cuid())
+    AdminName String
+    password  String
+
 }
