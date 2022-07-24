@@ -26,6 +26,7 @@ model Candidate {
     CandidateId  String   @id @unique @default(cuid())
     StudentNo    Int      @unique
     PositionName String
+    Manifesto    String   @db.LongText @default("Here’s to the crazy ones. The misfits. The rebels. The troublemakers. The round pegs in the square holes. The ones who see things differently. They’re not fond of rules. And they have no respect for the status quo. You can praise them, disagree with them, quote them, disbelieve them, glorify them or vilify them. About the only thing you can’t do is ignore them. Because they change things.")
     student      Student  @relation(fields: [StudentNo], references: [StudentNo])
     position     Position @relation(fields: [PositionName], references: [PositionName], onDelete: Cascade, onUpdate: Cascade)
     vote         Vote?
@@ -35,14 +36,14 @@ model Position {
     PositionId          String      @id @unique @default(cuid())
     PositionName        String      @unique
     PositionDescription String
-    candidate           Candidate[] //TODO rethink how candidates votes and position will be related to each other to avoid complexity
+    candidates          Candidate[]
     votes               Vote[]
 }
 
 model Vote {
     VoteId        String    @id @unique @default(cuid())
-    PositionId    String    @unique
-    VoterId       String    @unique
+    PositionId    String
+    VoterId       String
     CandidateId   String    @unique
     CastTimeStamp DateTime  @default(now())
     position      Position  @relation(fields: [PositionId], references: [PositionId])
@@ -72,5 +73,4 @@ model Admin {
     AdminId   String @id @unique @default(cuid())
     AdminName String
     password  String
-
 }

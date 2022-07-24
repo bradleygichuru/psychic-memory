@@ -5,14 +5,11 @@ type LayoutProps = {
 };
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <div data-theme="garden"> 
+    <div data-theme="garden">
       <div className="drawer">
         <input id="my-drawer" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content">
-          <label
-            htmlFor="my-drawer"
-            className="btn btn-primary drawer-button"
-          >
+          <label htmlFor="my-drawer" className="btn btn-primary drawer-button">
             <BiChevronsRight />
           </label>
           <main>{children}</main>
@@ -21,7 +18,7 @@ const Layout = ({ children }: LayoutProps) => {
           <label htmlFor="my-drawer" className="drawer-overlay"></label>
           <ul className="menu p-4 overflow-y-auto w-80 bg-base-100 text-base-content">
             <Link href="/">
-              <a className="btn m-1">Voter Details</a>
+              <a className="btn m-1">Voter and Candidate Details</a>
             </Link>
             <Link href="/auth/signup">
               <a className="btn m-1">signup</a>
@@ -29,18 +26,12 @@ const Layout = ({ children }: LayoutProps) => {
             <Link href="/auth/signin">
               <a className="btn m-1">signin</a>
             </Link>
-            <Link href="/candidates">
+            <Link href="/vote">
               <a className="btn m-1">Candidates</a>
             </Link>
             <Link href="/admin">
               <a className="btn m-1">Admin panel</a>
             </Link>
-            
-            
-            <Link href="/auth/signin">
-              <a className="btn m-1">Vote</a>
-            </Link>
-
             <a
               className="btn"
               onClick={() => {
@@ -52,7 +43,6 @@ const Layout = ({ children }: LayoutProps) => {
           </ul>
         </div>
       </div>
-     
     </div>
   );
 };
