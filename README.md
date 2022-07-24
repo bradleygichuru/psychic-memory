@@ -10,9 +10,13 @@ This is an app bootstrapped according to the [init.tips](https://init.tips) stac
 ```bash
     npm i 
 ```
-- set up a local mysqlserver and edit uri string located in the environment file .env
+- set up a local mysql-server and edit uri string located in the environment file .env
+  ```bash
+  DATABASE_URL=mysql://{user}:{password}@localhost:3306/{database-name}
+
+  ```
 - start the local development server
 - using the command 
-  ```bash
+```bash
   npm run dev 
-  ``` 
+``` 
