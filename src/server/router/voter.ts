@@ -1,5 +1,5 @@
 import { createRouter } from "./context";
-import { z } from "zod";
+import { string, z } from "zod";
 import { verify } from "jsonwebtoken";
 import { resolve } from "path";
 //TODO document
@@ -17,6 +17,7 @@ const voterRouter = createRouter()
 
       let checkSorted = check.split(" ");
       console.log(checkSorted);
+      /* let count = await ctx.prisma.position.findFirst({}); */
       let voter = await ctx.prisma.voter.create({
         data: {
           VotingStatus: false,
@@ -70,25 +71,11 @@ const voterRouter = createRouter()
       }
     },
   })
-  .mutation("castVote", {
-    input: z.object({
-      positionId: z.string(),
-      candidateId: z.string(),
-      voterId: z.string(),
-    }),
-    async resolve({ input, ctx }) {
-      const vote = await ctx.prisma.vote.create({
-        data: {
-          PositionId: input.positionId,
-          CandidateId: input.candidateId,
-          VoterId: input.voterId,
-        },
-      });
-      if (vote) {
-        return { result: "vote cast" };
-      } else {
-        return { result: "something went wrong" };
-      }
-    },
-  });
+  .mutation("castVote", {input:z.object({candidateId:z.string(),voterId:z.string(),positionId:string()}),async resolve({ctx,input}){
+    const castedVote = await ctx.prisma.candidate.update({where:{CandidateId:input.candidateId!},data:{VoteCount:{increment:1}}});
+    const positionTotalVote = await ctx.prisma.position.update({where:{PositionId:input.positionId},data:{VotesCast:{increment:1}}})
+    //TODO use number of casts in voter object to check for how many positions the user has voted 
+  }
+    
+    });
 export default voterRouter;

@@ -40,6 +40,7 @@ const Home: NextPage = () => {
     mutation.mutateAsync({ accessToken: token }).then((res) => {
       if (res.voter) {
         setVoter(res?.voter!);
+        localStorage.setItem("voterId", res.voter.VoterId);
         setIsVoter(true);
       }
     });
@@ -55,7 +56,7 @@ const Home: NextPage = () => {
         console.log(res.result);
       });
   };
-  const { data } = trpc.useQuery(["voter.isVoter", { accessToken: token! }], {
+  const { isLoading,data } = trpc.useQuery(["voter.isVoter", { accessToken: token! }], {
     onSuccess(data) {
       if (data.existence == null) {
         setIsVoter(false);

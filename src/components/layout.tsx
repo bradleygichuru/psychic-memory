@@ -20,17 +20,20 @@ const Layout = ({ children }: LayoutProps) => {
             <Link href="/">
               <a className="btn m-1">Voter and Candidate Details</a>
             </Link>
-            <Link href="/auth/signup">
-              <a className="btn m-1">signup</a>
-            </Link>
-            <Link href="/auth/signin">
-              <a className="btn m-1">signin</a>
+            <Link href="/elections">
+              <a className="btn m-1">Elections</a>
             </Link>
             <Link href="/vote">
               <a className="btn m-1">Candidates</a>
             </Link>
             <Link href="/admin">
               <a className="btn m-1">Admin panel</a>
+            </Link>
+            <Link href="/auth/signup">
+              <a className="btn m-1">signup</a>
+            </Link>
+            <Link href="/auth/signin">
+              <a className="btn m-1">signin</a>
             </Link>
             <a
               className="btn"

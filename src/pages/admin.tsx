@@ -7,8 +7,9 @@ import { trpc } from "../utils/trpc";
 //TODO document
 const Admin: NextPage = () => {
   //TODO prevent candidates from being added before positions are created
-  //TODO make toast disappear after x seconds
+ 
   const [adminName, setIsAdminName] = useState<string>();
+  const [showToast,setShowToast] = useState<boolean>(false);
   const [studentId, setStudentId] = useState<number>();
   const [candIsDisabled, setCandIsDisabled] = useState<boolean>(false);
   const [posIsDisabled, setPosIsDisabled] = useState<boolean>(false);
@@ -56,9 +57,15 @@ const Admin: NextPage = () => {
           setStatus("error signing in");
         }
         if (data?.token) {
+          
           setStatus("Success signing in");
+          setShowToast(true);
           sessionStorage.setItem("adminToken", data.token);
-          router.push("/admin");
+          setTimeout(()=>{
+            setShowToast(false);
+            router.push("/admin");
+          },2000)
+         
         }
       });
   };
@@ -204,14 +211,14 @@ const Admin: NextPage = () => {
           )}
         </div>
 
-        <div className="toast toast-top">
+       {showToast&& <div className="toast toast-top">
           <div className="alert alert-info">
             <div>
               <span>{status}</span>
             </div>
           </div>
           
-        </div>
+        </div>}
       </div>
     </Layout>
   );

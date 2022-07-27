@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Position` ADD COLUMN `votesCast` INTEGER NOT NULL DEFAULT 0;

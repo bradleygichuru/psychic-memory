@@ -52,7 +52,20 @@ const candidateRouter = createRouter()
   .query("getPositions", {
     async resolve({ ctx }) {
       const positions = await ctx.prisma.position.findMany({
-        include: { candidates:{select:{student:{select:{candidate:true,StudentNo:true,FirstName:true,SirName:true}}}}}
+        include: {
+          candidates: {
+            select: {
+              student: {
+                select: {
+                  candidate: true,
+                  StudentNo: true,
+                  FirstName: true,
+                  SirName: true,
+                },
+              },CandidateId:true
+            },
+          },
+        },
       });
       return { positions };
     },
@@ -66,12 +79,25 @@ const candidateRouter = createRouter()
         where: { CandidateId: input?.candidateId },
         data: { Manifesto: input?.manifesto },
       });
-      if(candidateWithManifesto){
-        return{result:"manifesto updated"}
-      }else{
-        return{
-          result:"something went wrong updating your manifesto"
-        }
+      if (candidateWithManifesto) {
+        return { result: "manifesto updated" };
+      } else {
+        return {
+          result: "something went wrong updating your manifesto",
+        };
+      }
+    },
+  })
+  .query("getVotes", {
+    async resolve({ ctx }) {
+      const votes = await ctx.prisma.position.findMany({
+        select: { PositionName:true,candidates:{include:{student:true}}, VotesCast: true, },
+      });
+
+      if (votes == null) {
+        return { result: "an error occured wjile making this request" };
+      } else {
+        return { votes };
       }
     },
   });
