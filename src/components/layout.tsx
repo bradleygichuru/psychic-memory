@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { BiChevronsRight } from "react-icons/bi";
+
 type LayoutProps = {
   children: React.ReactNode;
 };
 const Layout = ({ children }: LayoutProps) => {
+  const router = useRouter();
   return (
     <div data-theme="garden">
       <div className="drawer">
@@ -39,6 +42,8 @@ const Layout = ({ children }: LayoutProps) => {
               className="btn"
               onClick={() => {
                 sessionStorage.clear();
+                router.push("/auth/signin")
+                
               }}
             >
               logout
