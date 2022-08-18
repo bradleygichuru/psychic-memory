@@ -7,9 +7,10 @@ import { trpc } from "../utils/trpc";
 //TODO document
 const Admin: NextPage = () => {
   //TODO prevent candidates from being added before positions are created
- 
+
   const [adminName, setIsAdminName] = useState<string>();
-  const [showToast,setShowToast] = useState<boolean>(false);
+  const [showToast, setShowToast] = useState<boolean>(false);
+  const [candidateAlias, setCandidateAlias] = useState<string>();
   const [studentId, setStudentId] = useState<number>();
   const [candIsDisabled, setCandIsDisabled] = useState<boolean>(false);
   const [posIsDisabled, setPosIsDisabled] = useState<boolean>(false);
@@ -24,13 +25,26 @@ const Admin: NextPage = () => {
   const router = useRouter();
   const handleAddCandidate = () => {
     mutationCandidate
-      .mutateAsync({ posName: positionName!, studentNo: studentId! })
+      .mutateAsync({ posName: positionName!, studentNo: studentId!,candidateAlias:candidateAlias! })
       .then((data) => {
         if (data.candidate) {
           setStatus("candidate added");
+
+          setShowToast(true);
+          setTimeout(() => {
+            setCandidateAlias("");
+            setStudentId(0);
+            setPositionName("");
+            setShowToast(false);
+          }, 4000)
           console.log(data.candidate);
         } else {
           setStatus(data.result);
+
+          setShowToast(true);
+          setTimeout(() => {
+            setShowToast(false);
+          }, 4000)
           console.log(data.result);
         }
       });
@@ -40,10 +54,22 @@ const Admin: NextPage = () => {
       .mutateAsync({ posName: positionName!, posDescription: posDescription! })
       .then((data) => {
         if (data.position) {
-          setStatus("position added sucessfully")
+          setStatus("position added sucessfully");
+          setShowToast(true);
           console.log("position added sucessfully");
+          setTimeout(() => {
+
+          setShowToast(false);
+
+          setPositionName("");
+          setPosDescription("");
+          }, 4000)
         } else {
-          setStatus(data.result)
+          setStatus(data.result);         
+          setShowToast(true);
+          setTimeout(() => {
+            setShowToast(false);
+          }, 4000)
           console.log(data.result);
         }
       });
@@ -55,17 +81,22 @@ const Admin: NextPage = () => {
         console.log(data);
         if (data?.existence) {
           setStatus("error signing in");
+
+          setShowToast(true);
+          setTimeout(() => {
+            setShowToast(false);
+          }, 4000)
         }
         if (data?.token) {
-          
+
           setStatus("Success signing in");
           setShowToast(true);
           sessionStorage.setItem("adminToken", data.token);
-          setTimeout(()=>{
+          setTimeout(() => {
             setShowToast(false);
             router.push("/admin");
-          },2000)
-         
+          }, 4000)
+
         }
       });
   };
@@ -95,9 +126,20 @@ const Admin: NextPage = () => {
               <h2 className="card-title">Add candidate</h2>
               <input
                 type="number"
+                value={studentId}
                 placeholder="student no"
                 onChange={(e) => {
                   setStudentId(e.target.valueAsNumber);
+                }}
+                className="input w-full input-bordered max-w-xs"
+              />
+
+              <input
+                value={candidateAlias}
+                type="text"
+                placeholder="candidate alias"
+                onChange={(e) => {
+                  setCandidateAlias(e.target.value);
                 }}
                 className="input w-full input-bordered max-w-xs"
               />
@@ -137,6 +179,7 @@ const Admin: NextPage = () => {
 
               <input
                 type="text"
+                value={positionName}
                 placeholder="position name "
                 className="input w-full input-bordered max-w-xs"
                 onChange={(e) => {
@@ -145,6 +188,7 @@ const Admin: NextPage = () => {
               />
               <textarea
                 className="textarea textarea-bordered"
+                value={posDescription}
                 placeholder="position description"
                 onChange={(e) => {
                   setPosDescription(e.target.value);
@@ -176,6 +220,7 @@ const Admin: NextPage = () => {
                   <span>number</span>
                   <input
                     type="text"
+                    
                     placeholder="Name"
                     className="input input-bordered"
                     onChange={(e) => {
@@ -211,13 +256,13 @@ const Admin: NextPage = () => {
           )}
         </div>
 
-       {showToast&& <div className="toast toast-top">
+        {showToast && <div className="toast toast-top">
           <div className="alert alert-info">
             <div>
               <span>{status}</span>
             </div>
           </div>
-          
+
         </div>}
       </div>
     </Layout>

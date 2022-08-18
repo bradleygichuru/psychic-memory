@@ -1,4 +1,4 @@
-import { z, ZodLazy } from "zod";
+import { z } from "zod";
 import { createRouter } from "./context";
 
 const candidateRouter = createRouter()
@@ -7,6 +7,7 @@ const candidateRouter = createRouter()
       .object({
         studentNo: z.number(),
         posName: z.string(),
+        candidateAlias: z.string()
       })
       .nullish(),
     async resolve({ input, ctx }) {
@@ -16,7 +17,7 @@ const candidateRouter = createRouter()
       });
       if (candidate == null) {
         const candidate = await ctx.prisma.candidate.create({
-          data: { StudentNo: input?.studentNo!, PositionName: input?.posName! },
+          data: { StudentNo: input?.studentNo!, PositionName: input?.posName!, CandidateAlias:input?.candidateAlias! },
         });
         console.log(candidate);
         return { candidate };
@@ -62,7 +63,7 @@ const candidateRouter = createRouter()
                   FirstName: true,
                   SirName: true,
                 },
-              },CandidateId:true
+              }, CandidateId: true
             },
           },
         },
@@ -91,7 +92,7 @@ const candidateRouter = createRouter()
   .query("getVotes", {
     async resolve({ ctx }) {
       const votes = await ctx.prisma.position.findMany({
-        select: { PositionName:true,candidates:{include:{student:true}}, VotesCast: true, },
+        select: { PositionName: true, candidates: { include: { student: true } }, VotesCast: true, },
       });
 
       if (votes == null) {

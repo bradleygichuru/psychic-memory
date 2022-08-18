@@ -1,21 +1,22 @@
 import type { NextPage } from "next";
-import Head from "next/head";
-import Link from "next/link";
 import { trpc } from "../utils/trpc";
-import { BiChevronsRight } from "react-icons/bi";
 import Layout from "../components/layout";
 import router from "next/router";
 import { useEffect, useState } from "react";
-import { Candidate, Student, Voter } from "@prisma/client";
-import { object } from "zod";
+import { Candidate, Voter } from "@prisma/client";
 
 const Home: NextPage = () => {
+
   const [token, setToken] = useState("");
+  const [showToast, setShowToast] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState("");
   const [isVoter, setIsVoter] = useState(false);
+  const messageMutation = trpc.useMutation('voter.sendMessage');
   const [isCanditate, setIsCandidate] = useState(false);
   const [manifesto, setManifesto] = useState<string>("");
   const [resultString, setResultString] = useState<string>();
+  const [message, setMessage] = useState<string>();
+  const [candidateAlias, setCandidateAlias] = useState<string>();
   const [voter, setVoter] = useState<
     Voter & {
       student: {
@@ -26,6 +27,19 @@ const Home: NextPage = () => {
       };
     }
   >();
+  const sendMessage = () => {
+    messageMutation.mutateAsync({ message: message!, voterId: localStorage.getItem('voterId')!, candidateAlias: candidateAlias! }).then(res => {
+      setResultString(res.status);
+      setShowToast(true);
+      console.log(res.status);
+      
+      setTimeout(() => {
+        setShowToast(false);
+        setCandidateAlias("");
+        setMessage("");
+      }, 2000)
+    })
+  }
   const mutation = trpc.useMutation("voter.registerVoter");
   const mutationManifesto = trpc.useMutation("candidate.updateManifesto");
   useEffect(() => {
@@ -53,10 +67,17 @@ const Home: NextPage = () => {
       })
       .then((res) => {
         setResultString(res.result);
+        
+      setShowToast(true);
         console.log(res.result);
+
+        setTimeout(() => {
+          setShowToast(false);
+        }, 2000)
+
       });
   };
-  const { isLoading,data } = trpc.useQuery(["voter.isVoter", { accessToken: token! }], {
+  const { isLoading, data } = trpc.useQuery(["voter.isVoter", { accessToken: token! }], {
     onSuccess(data) {
       if (data.existence == null) {
         setIsVoter(false);
@@ -77,6 +98,14 @@ const Home: NextPage = () => {
         data-theme="garden"
         className="grid grid-cols-1 place-items-center h-screen "
       >
+        {showToast && <div className="z-10 toast toast-top">
+          <div className="alert alert-info">
+            <div>
+              <span>{resultString}</span>
+            </div>
+          </div>
+
+        </div>}
         {!isVoter && (
           <div className="card w-96 bg-base-100 shadow-xl">
             <div className="card-body">
@@ -109,6 +138,7 @@ const Home: NextPage = () => {
                   </tr>
                 </tbody>
               </table>
+
               {isCanditate && (
                 <table className="table mx-1">
                   <thead>
@@ -135,7 +165,7 @@ const Home: NextPage = () => {
                 <div className="card-body">
                   <h2 className="card-title">Update manisfesto</h2>
                   <textarea
-                    className="textarea"
+                    className="textarea textarea-bordered"
                     onChange={(e) => {
                       setManifesto(e.target.value);
                     }}
@@ -150,6 +180,42 @@ const Home: NextPage = () => {
                       }}
                     >
                       update
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            {isVoter && (
+
+              <div className="card m-1 w-96 bg-base-100 shadow-xl">
+                <div className="card-body">
+                  <h2 className="card-title">send message to a candidate</h2>
+
+                  <input
+                    type="text"
+                    placeholder="candidate Alias"
+
+                    onChange={(e) => {
+                      setCandidateAlias(e.target.value);
+                    }}
+                    className="input input-bordered"
+                  />
+                  <textarea
+                    className="textarea textarea-bordered"
+                    onChange={(e) => {
+                      setMessage(e.target.value);
+                    }}
+                    placeholder="message"
+                  ></textarea>
+
+                  <div className="card-actions justify-end">
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => {
+                        sendMessage();
+                      }}
+                    >
+                      send
                     </button>
                   </div>
                 </div>

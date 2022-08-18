@@ -1,67 +1,77 @@
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["referentialIntegrity"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
 }
 
 datasource db {
-    provider             = "mysql"
-    url                  = env("DATABASE_URL")
-    referentialIntegrity = "prisma"
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
 }
 
 model Student {
-    StudentNo   Int        @id @unique
-    FirstName   String
-    SirName     String
-    Email       String     @unique
-    Faculty     String
-    Course      String
-    YearOfStudy Int
-    password    String     @unique
-    voter       Voter?
-    candidate   Candidate?
+  StudentNo   Int        @id @unique
+  FirstName   String
+  SirName     String
+  Email       String     @unique
+  Faculty     String
+  Course      String
+  YearOfStudy Int
+  password    String     @unique
+  voter       Voter?
+  candidate   Candidate?
 }
 
 model Candidate {
-    CandidateId  String   @id @unique @default(cuid())
-    StudentNo    Int      @unique
-    PositionName String
-    Manifesto    String   @default("Here’s to the crazy ones. The misfits. The rebels. The troublemakers. The round pegs in the square holes. The ones who see things differently. They’re not fond of rules. And they have no respect for the status quo. You can praise them, disagree with them, quote them, disbelieve them, glorify them or vilify them. About the only thing you can’t do is ignore them. Because they change things.") @db.LongText
-    student      Student  @relation(fields: [StudentNo], references: [StudentNo])
-    position     Position @relation(fields: [PositionName], references: [PositionName], onDelete: Cascade, onUpdate: Cascade)
+  CandidateId  String   @id @unique @default(cuid())
+  StudentNo    Int      @unique
+  PositionName String
+  CandidateAlias String @unique @default("") 
+  Manifesto    String   @default("Here’s to the crazy ones. The misfits. The rebels. The troublemakers. The round pegs in the square holes. The ones who see things differently. They’re not fond of rules. And they have no respect for the status quo. You can praise them, disagree with them, quote them, disbelieve them, glorify them or vilify them. About the only thing you can’t do is ignore them. Because they change things.") @db.LongText
+  student      Student  @relation(fields: [StudentNo], references: [StudentNo])
+  position     Position @relation(fields: [PositionName], references: [PositionName], onDelete: Cascade, onUpdate: Cascade)
+  VoteCount Int       @default(0)
+  Message   Message[]
+}
 
-    VoteCount Int @default(0)
+model Message {
+  MessageId     String    @id @unique @default(cuid())
+  Contents      String
+  fromVoterID   String
+  toCandidateAlias String
+  voter         Voter     @relation(fields: [fromVoterID], references: [VoterId])
+  candidate     Candidate @relation(fields: [toCandidateAlias], references: [CandidateAlias])
 }
 
 model Position {
-    PositionId          String      @id @unique @default(cuid())
-    PositionName        String      @unique
-    PositionDescription String
-    VotesCast Int @default(0)
-    candidates          Candidate[]
+  PositionId          String      @id @unique @default(cuid())
+  PositionName        String      @unique
+  PositionDescription String
+  VotesCast           Int         @default(0)
+  candidates          Candidate[]
 }
 
 model Election {
-    ElectionId          String   @id @unique @default(cuid())
-    ElectionName        String
-    ElectionDescription String
-    ElectionDate        DateTime
-    InProgress          Boolean
-    StartedAt           DateTime
+  ElectionId          String   @id @unique @default(cuid())
+  ElectionName        String
+  ElectionDescription String
+  ElectionDate        DateTime
+  InProgress          Boolean
+  StartedAt           DateTime
 }
 
 model Voter {
-    VoterId        String  @id @unique @default(cuid())
-    StudentNo      Int     @unique
-    student        Student @relation(fields: [StudentNo], references: [StudentNo])
-    VotingStatus   Boolean
-    LoginTimeStamp String
-   
-    //TODO ensure a voter does not cast two votes for one position 
+  VoterId        String  @id @unique @default(cuid())
+  StudentNo      Int     @unique
+  student        Student @relation(fields: [StudentNo], references: [StudentNo])
+  VotingStatus   Boolean
+  LoginTimeStamp String
+
+  Message Message[]
 }
 
 model Admin {
-    AdminId   String @id @unique @default(cuid())
-    AdminName String
-    password  String
+  AdminId   String @id @unique @default(cuid())
+  AdminName String
+  password  String
 }
