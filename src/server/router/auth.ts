@@ -14,6 +14,7 @@ const authRouter = createRouter()
         facualty: z.string().nullish(),
         yearOfStudy: z.number().nullish(),
         course: z.string().nullish(),
+        displayName: z.string().nullish(),
         password: z.string(),
       })
       .nullish(),
@@ -25,6 +26,7 @@ const authRouter = createRouter()
         const res = await ctx.prisma.student.create({
           data: {
             StudentNo: input?.studentNo!,
+            displayName:input?.displayName!,
             SirName: input?.sirName!,
             FirstName: input?.firstName!,
             Email: input?.email!,

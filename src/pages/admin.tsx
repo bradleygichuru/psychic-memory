@@ -10,10 +10,11 @@ const Admin: NextPage = () => {
 
   const [adminName, setIsAdminName] = useState<string>();
   const [showToast, setShowToast] = useState<boolean>(false);
-  const [candidateAlias, setCandidateAlias] = useState<string>();
+  
   const [studentId, setStudentId] = useState<number>();
   const [candIsDisabled, setCandIsDisabled] = useState<boolean>(false);
   const [posIsDisabled, setPosIsDisabled] = useState<boolean>(false);
+  const [candidatePosition, setCandidatePosition] = useState<string>();
   const [positionName, setPositionName] = useState<string>();
   const [adminPassword, setAdminPassword] = useState<string>();
   const [posDescription, setPosDescription] = useState<string>();
@@ -25,18 +26,21 @@ const Admin: NextPage = () => {
   const router = useRouter();
   const handleAddCandidate = () => {
     mutationCandidate
-      .mutateAsync({ posName: positionName!, studentNo: studentId!,candidateAlias:candidateAlias! })
+      .mutateAsync({
+        posName: candidatePosition!,
+        studentNo: studentId!,
+        
+      })
       .then((data) => {
         if (data.candidate) {
           setStatus("candidate added");
-
           setShowToast(true);
           setTimeout(() => {
-            setCandidateAlias("");
+            
             setStudentId(0);
             setPositionName("");
             setShowToast(false);
-          }, 4000)
+          }, 4000);
           console.log(data.candidate);
         } else {
           setStatus(data.result);
@@ -44,7 +48,7 @@ const Admin: NextPage = () => {
           setShowToast(true);
           setTimeout(() => {
             setShowToast(false);
-          }, 4000)
+          }, 4000);
           console.log(data.result);
         }
       });
@@ -58,18 +62,17 @@ const Admin: NextPage = () => {
           setShowToast(true);
           console.log("position added sucessfully");
           setTimeout(() => {
+            setShowToast(false);
 
-          setShowToast(false);
-
-          setPositionName("");
-          setPosDescription("");
-          }, 4000)
+            setPositionName("");
+            setPosDescription("");
+          }, 4000);
         } else {
-          setStatus(data.result);         
+          setStatus(data.result);
           setShowToast(true);
           setTimeout(() => {
             setShowToast(false);
-          }, 4000)
+          }, 4000);
           console.log(data.result);
         }
       });
@@ -85,18 +88,16 @@ const Admin: NextPage = () => {
           setShowToast(true);
           setTimeout(() => {
             setShowToast(false);
-          }, 4000)
+          }, 4000);
         }
         if (data?.token) {
-
           setStatus("Success signing in");
           setShowToast(true);
           sessionStorage.setItem("adminToken", data.token);
           setTimeout(() => {
             setShowToast(false);
             router.push("/admin");
-          }, 4000)
-
+          }, 4000);
         }
       });
   };
@@ -135,19 +136,10 @@ const Admin: NextPage = () => {
               />
 
               <input
-                value={candidateAlias}
-                type="text"
-                placeholder="candidate alias"
-                onChange={(e) => {
-                  setCandidateAlias(e.target.value);
-                }}
-                className="input w-full input-bordered max-w-xs"
-              />
-              <input
                 type="text"
                 placeholder="position name "
                 onChange={(e) => {
-                  setPositionName(e.target.value);
+                  setCandidatePosition(e.target.value);
                 }}
                 className="input w-full input-bordered max-w-xs"
               />
@@ -183,7 +175,7 @@ const Admin: NextPage = () => {
                 placeholder="position name "
                 className="input w-full input-bordered max-w-xs"
                 onChange={(e) => {
-                  setPositionName(e.target.value);
+                  setPositionName(e.target.value.trim());
                 }}
               />
               <textarea
@@ -191,7 +183,7 @@ const Admin: NextPage = () => {
                 value={posDescription}
                 placeholder="position description"
                 onChange={(e) => {
-                  setPosDescription(e.target.value);
+                  setPosDescription(e.target.value.trim());
                 }}
               />
               <div className="card-actions justify-end">
@@ -220,11 +212,10 @@ const Admin: NextPage = () => {
                   <span>number</span>
                   <input
                     type="text"
-                    
                     placeholder="Name"
                     className="input input-bordered"
                     onChange={(e) => {
-                      setIsAdminName(e.target.value);
+                      setIsAdminName(e.target.value.trim());
                     }}
                   />
                 </label>
@@ -238,7 +229,7 @@ const Admin: NextPage = () => {
                     placeholder="****"
                     className="input input-bordered"
                     onChange={(e) => {
-                      setAdminPassword(e.target.value);
+                      setAdminPassword(e.target.value.trim());
                     }}
                   />
                 </label>
@@ -248,7 +239,6 @@ const Admin: NextPage = () => {
                     handleSignIn();
                   }}
                 >
-                  {" "}
                   Signin
                 </button>
               </div>
@@ -256,14 +246,15 @@ const Admin: NextPage = () => {
           )}
         </div>
 
-        {showToast && <div className="toast toast-top">
-          <div className="alert alert-info">
-            <div>
-              <span>{status}</span>
+        {showToast && (
+          <div className="toast toast-top">
+            <div className="alert alert-info">
+              <div>
+                <span>{status}</span>
+              </div>
             </div>
           </div>
-
-        </div>}
+        )}
       </div>
     </Layout>
   );

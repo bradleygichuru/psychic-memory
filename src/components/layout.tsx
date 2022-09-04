@@ -32,18 +32,28 @@ const Layout = ({ children }: LayoutProps) => {
             <Link href="/admin">
               <a className="btn m-1">Admin panel</a>
             </Link>
-            <Link href="/auth/signup">
+            <Link
+              href="/auth/signup"
+              onClick={() => {
+                localStorage.removeItem("voterId");
+              }}
+            >
               <a className="btn m-1">signup</a>
             </Link>
-            <Link href="/auth/signin">
+            <Link
+              href="/auth/signin"
+              onClick={() => {
+                localStorage.removeItem("voterId");
+              }}
+            >
               <a className="btn m-1">signin</a>
             </Link>
             <a
               className="btn"
               onClick={() => {
                 sessionStorage.clear();
-                router.push("/auth/signin")
-                
+                localStorage.removeItem("voterId");
+                router.push("/auth/signin");
               }}
             >
               logout

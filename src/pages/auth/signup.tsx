@@ -14,6 +14,7 @@ type FormValues = {
   yearOfStudy: number;
   password: string;
   course: string;
+  displayName:string;
 };
 
 const SignUp: NextPage = () => {
@@ -40,6 +41,7 @@ const SignUp: NextPage = () => {
         yearOfStudy: data.yearOfStudy,
         password: data.password,
         course: data.course,
+        displayName:data.displayName,
       })
       .then((res) => {
         console.log(res);
@@ -103,6 +105,23 @@ const SignUp: NextPage = () => {
             {...register("firstName", { required: true })}
             type="text"
             placeholder="John"
+            className="input input-bordered"
+          />
+        </label>
+        <label className="label">
+          <span className="label-text">Display Name</span>
+          {errors.displayName && (
+            <span className="label-text-alt text-red-900">
+              This field is required
+            </span>
+          )}
+        </label>
+        <label className="input-group font-bold">
+          <span>name</span>
+          <input
+            {...register("displayName", { required: true })}
+            type="text"
+            placeholder="coolname"
             className="input input-bordered"
           />
         </label>

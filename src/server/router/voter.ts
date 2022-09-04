@@ -1,6 +1,7 @@
 import { createRouter } from "./context";
 import { string, z } from "zod";
 import { verify } from "jsonwebtoken";
+let passkey = "V1hYCju+gHXdJaAVPrWR22UAK+6vYqFQYGYc0Lonj4E="
 //TODO document
 const date = new Date();
 const voterRouter = createRouter()
@@ -11,7 +12,7 @@ const voterRouter = createRouter()
     async resolve({ input, ctx }) {
       let check = verify(
         input.accessToken,
-        "V1hYCju+gHXdJaAVPrWR22UAK+6vYqFQYGYc0Lonj4E="
+        passkey
       );
 
       let checkSorted = check.split(" ");
@@ -26,6 +27,7 @@ const voterRouter = createRouter()
         include: {
           student: {
             select: {
+              displayName:true,
               FirstName: true,
               SirName: true,
               voter: true,
@@ -45,7 +47,7 @@ const voterRouter = createRouter()
     async resolve({ input, ctx }) {
       let check = verify(
         input.accessToken,
-        "V1hYCju+gHXdJaAVPrWR22UAK+6vYqFQYGYc0Lonj4E="
+        passkey
       );
       let checkSorted = check.split(" ");
       console.log(checkSorted);
@@ -54,10 +56,11 @@ const voterRouter = createRouter()
         include: {
           student: {
             select: {
+              displayName:true,
               FirstName: true,
               SirName: true,
               voter: true,
-              candidate: true,
+              candidate: true ,
             },
           },
         },
@@ -71,28 +74,46 @@ const voterRouter = createRouter()
     },
   })
   .mutation("castVote", {
-    input: z.object({ candidateId: z.string(), voterId: z.string(), positionId: string() }), async resolve({ ctx, input }) {
-      const castedVote = await ctx.prisma.candidate.update({ where: { CandidateId: input.candidateId! }, data: { VoteCount: { increment: 1 } } });
-      const positionTotalVote = await ctx.prisma.position.update({ where: { PositionId: input.positionId }, data: { VotesCast: { increment: 1 } } })
-      //TODO use number of casts in voter object to check for how many positions the user has voted 
-    }
-
+    input: z.object({
+      candidateId: z.string(),
+      voterId: z.string(),
+      positionId: string(),
+    }),
+    async resolve({ ctx, input }) {
+      const castedVote = await ctx.prisma.candidate.update({
+        where: { CandidateId: input.candidateId! },
+        data: { VoteCount: { increment: 1 } },
+      });
+      const positionTotalVote = await ctx.prisma.position.update({
+        where: { PositionId: input.positionId },
+        data: { VotesCast: { increment: 1 } },
+      });
+      //TODO use number of casts in voter object to check for how many positions the user has voted
+    },
   })
   .mutation("sendMessage", {
-    input: z.object({ candidateAlias: z.string(), voterId: z.string(), message: z.string() }), async resolve({ ctx, input }) {
-      const message = await ctx.prisma.message.create({ data: { Contents: input.message, toCandidateAlias:input.candidateAlias!, fromVoterID: input.voterId } });
+    input: z.object({
+      displayName: z.string(),
+      voterId: z.string(),
+      message: z.string(),
+    }),
+    async resolve({ ctx, input }) {
+      const message = await ctx.prisma.message.create({
+        data: {
+          Contents: input.message,
+          receipientName: input.displayName.trim()!,
+          senderId: input.voterId,
+        },
+      });
       if (message) {
         return {
-          status: "message sent successfully"
-        }
+          status: "message sent successfully",
+        };
       } else {
         return {
-          status: "error sending message"
-        }
+          status: "error sending message",
+        };
       }
-
-
-    }
-
+    },
   });
 export default voterRouter;

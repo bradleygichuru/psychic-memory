@@ -11,6 +11,7 @@ datasource db {
 
 model Student {
   StudentNo   Int        @id @unique
+  displayName String    @unique
   FirstName   String
   SirName     String
   Email       String     @unique
@@ -20,27 +21,27 @@ model Student {
   password    String     @unique
   voter       Voter?
   candidate   Candidate?
+  messages    Message[]
 }
 
 model Candidate {
   CandidateId  String   @id @unique @default(cuid())
   StudentNo    Int      @unique
   PositionName String
-  CandidateAlias String @unique @default("") 
   Manifesto    String   @default("Here’s to the crazy ones. The misfits. The rebels. The troublemakers. The round pegs in the square holes. The ones who see things differently. They’re not fond of rules. And they have no respect for the status quo. You can praise them, disagree with them, quote them, disbelieve them, glorify them or vilify them. About the only thing you can’t do is ignore them. Because they change things.") @db.LongText
-  student      Student  @relation(fields: [StudentNo], references: [StudentNo])
+  student      Student  @relation(fields: [StudentNo], references: [StudentNo], onDelete: Cascade, onUpdate: Cascade)
   position     Position @relation(fields: [PositionName], references: [PositionName], onDelete: Cascade, onUpdate: Cascade)
-  VoteCount Int       @default(0)
-  Message   Message[]
+  VoteCount    Int      @default(0)
 }
 
 model Message {
-  MessageId     String    @id @unique @default(cuid())
-  Contents      String
-  fromVoterID   String
-  toCandidateAlias String
-  voter         Voter     @relation(fields: [fromVoterID], references: [VoterId])
-  candidate     Candidate @relation(fields: [toCandidateAlias], references: [CandidateAlias])
+  MessageId       String  @id @unique @default(cuid())
+  Contents        String
+  senderId        String
+  receipientName  String
+  parentMessageId String? @default("")
+  sender          Voter   @relation(fields: [senderId], references: [VoterId], onDelete: Cascade, onUpdate: Cascade)
+  receipient      Student @relation(fields: [receipientName], references: [displayName], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Position {
@@ -61,13 +62,12 @@ model Election {
 }
 
 model Voter {
-  VoterId        String  @id @unique @default(cuid())
-  StudentNo      Int     @unique
-  student        Student @relation(fields: [StudentNo], references: [StudentNo])
+  VoterId        String    @id @unique @default(cuid())
+  StudentNo      Int       @unique
+  student        Student   @relation(fields: [StudentNo], references: [StudentNo])
   VotingStatus   Boolean
   LoginTimeStamp String
-
-  Message Message[]
+  Message        Message[]
 }
 
 model Admin {
