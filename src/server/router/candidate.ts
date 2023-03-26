@@ -102,7 +102,7 @@ const candidateRouter = createRouter()
       });
 
       if (votes == null) {
-        return { result: "an error occured wjile making this request" };
+        return { result: "an error occured while making this request" };
       } else {
         return { votes };
       }

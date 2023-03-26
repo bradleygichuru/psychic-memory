@@ -61,6 +61,7 @@ const voterRouter = createRouter()
               SirName: true,
               voter: true,
               candidate: true ,
+            messages:true,
             },
           },
         },

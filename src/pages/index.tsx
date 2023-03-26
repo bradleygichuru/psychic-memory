@@ -16,17 +16,6 @@ const Home: NextPage = () => {
   const [resultString, setResultString] = useState<string>();
   const [message, setMessage] = useState<string>();
   const [displayName, setDisplayName] = useState<string>();
-  const [voter, setVoter] = useState<
-    Voter & {
-      student: {
-        voter: Voter | null;
-        candidate: Candidate | null;
-        displayName: string | null;
-        FirstName: string;
-        SirName: string;
-      };
-    }
-  >();
   const sendMessage = () => {
     messageMutation
       .mutateAsync({
@@ -69,7 +58,7 @@ const Home: NextPage = () => {
     mutationManifesto
       .mutateAsync({
         manifesto: manifesto,
-        candidateId: voter?.student.candidate?.CandidateId!,
+        candidateId: voterData?.data?.voter?.student.candidate?.CandidateId!,
       })
       .then((res) => {
         setResultString(res.result);
@@ -82,7 +71,7 @@ const Home: NextPage = () => {
         }, 2000);
       });
   };
-  const { isLoading, data } = trpc.useQuery(
+  const voterData= trpc.useQuery(
     ["voter.isVoter", { accessToken: token! }],
     {
       onSuccess(data) {
@@ -95,12 +84,11 @@ const Home: NextPage = () => {
           }
           setIsVoter(true);
           localStorage.setItem("voterId", data.voter.VoterId);
-          setVoter(data.voter);
-        }
+                 }
       },
     }
   );
-  console.log(data);
+  console.log(voterData?.data);
   return (
     <Layout>
       <div
@@ -142,9 +130,9 @@ const Home: NextPage = () => {
                 <tbody>
                   <tr>
                     <td>
-                      {voter?.student.FirstName} {voter?.student.SirName}
+                      {voterData?.data?.voter?.student.FirstName} {voterData?.data?.voter?.student.SirName}
                     </td>
-                    <td>{voter?.VoterId}</td>
+                    <td>{voterData?.data?.voter?.VoterId}</td>
                   </tr>
                 </tbody>
               </table>
@@ -162,11 +150,11 @@ const Home: NextPage = () => {
                   <tbody>
                     <tr>
                       <td>
-                        {voter?.student.FirstName} {voter?.student.SirName}
+                        {voterData?.data?.voter?.student.FirstName} {voterData?.data?.voter?.student.SirName}
                       </td>
-                      <td>{voter?.student.candidate?.CandidateId}</td>
-                      <td>{voter?.student.candidate?.PositionName}</td>
-                      <td>{voter?.student.displayName}</td>
+                      <td>{voterData?.data?.voter?.student.candidate?.CandidateId}</td>
+                      <td>{voterData?.data?.voter?.student.candidate?.PositionName}</td>
+                      <td>{voterData?.data?.voter?.student.displayName}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -201,22 +189,23 @@ const Home: NextPage = () => {
                   <div className="card w-96 bg-base-100 shadow-xl">
                     <div className="card-body">
                       <h2 className="card-title">Messages</h2>
-                      <textarea
-                        className="textarea textarea-bordered"
-                        onChange={(e) => {
-                          setManifesto(e.target.value);
-                        }}
-                        placeholder="your"
-                      ></textarea>
-
-                      <div className="card-actions justify-end">
+                      {voterData?.data?.voter?.student?.messages.map((val,index)=>{
+                        return(
+<div className="chat chat-start">
+                        <div className="chat-bubble">
+                         {val?.Contents}
+                        </div>
+                      </div>
+                        )
+                      })}
+                                            <div className="card-actions justify-end">
                         <button
                           className="btn btn-primary"
                           onClick={() => {
                             updateManifesto();
                           }}
                         >
-                          replyF
+                          reply
                         </button>
                       </div>
                     </div>
