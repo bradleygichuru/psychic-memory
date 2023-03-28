@@ -6,7 +6,7 @@ import { ReactNode, useEffect, useState } from "react";
 import Layout from "../components/layout";
 import { trpc } from "../utils/trpc";
 const Vote: NextPage = () => {
-  const [electionStarted, setElectionStarted] = useState<boolean>(false);
+  const [electionStarted, setElectionStarted] = useState<boolean>(true);
   const [voterId, setVoterId] = useState<string>("");
   const [showToast, setShowToast] = useState<boolean>(false);
   const [status, setStatus] = useState<string>("");
