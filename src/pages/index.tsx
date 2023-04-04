@@ -48,7 +48,6 @@ const Home: NextPage = () => {
   const register = () => {
     mutationRegisterVoter.mutateAsync({ accessToken: token }).then((res) => {
       if (res.voter) {
-        setVoter(res?.voter!);
         localStorage.setItem("voterId", res.voter.VoterId);
         setIsVoter(true);
       }
