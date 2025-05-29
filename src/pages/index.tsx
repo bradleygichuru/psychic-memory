@@ -70,7 +70,7 @@ const Home: NextPage = () => {
         }, 2000);
       });
   };
-  const voterData= trpc.useQuery(
+  const voterData = trpc.useQuery(
     ["voter.isVoter", { accessToken: token! }],
     {
       onSuccess(data) {
@@ -83,7 +83,7 @@ const Home: NextPage = () => {
           }
           setIsVoter(true);
           localStorage.setItem("voterId", data.voter.VoterId);
-                 }
+        }
       },
     }
   );
@@ -188,24 +188,16 @@ const Home: NextPage = () => {
                   <div className="card w-96 bg-base-100 shadow-xl">
                     <div className="card-body">
                       <h2 className="card-title">Messages</h2>
-                      {voterData?.data?.voter?.student?.messages.map((val,index)=>{
-                        return(
-<div className="chat chat-start">
-                        <div className="chat-bubble">
-                         {val?.Contents}
-                        </div>
-                      </div>
+                      {voterData?.data?.voter?.student?.messages.map((val, index) => {
+                        return (
+                          <div className="chat chat-start">
+                            <div className="chat-bubble">
+                              {val?.Contents}
+                            </div>
+                          </div>
                         )
                       })}
-                                            <div className="card-actions justify-end">
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => {
-                            updateManifesto();
-                          }}
-                        >
-                          reply
-                        </button>
+                      <div className="card-actions justify-end">
                       </div>
                     </div>
                   </div>

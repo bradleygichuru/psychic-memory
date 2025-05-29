@@ -7,7 +7,7 @@ const candidateRouter = createRouter()
       .object({
         studentNo: z.number(),
         posName: z.string(),
-        
+
       })
       .nullish(),
     async resolve({ input, ctx }) {
@@ -97,14 +97,18 @@ const candidateRouter = createRouter()
         select: {
           PositionName: true,
           candidates: { include: { student: true } },
-          VotesCast: true,
         },
       });
-
+      let votesCast = 0;
+      votes.map((position, index) => {
+        position?.candidates.map((candidate, index) => {
+          votesCast = candidate.VoteCount + votesCast
+        })
+      })
       if (votes == null) {
         return { result: "an error occured while making this request" };
       } else {
-        return { votes };
+        return { votes, votesCast };
       }
     },
   });

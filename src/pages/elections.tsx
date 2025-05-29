@@ -5,32 +5,24 @@ import Layout from "../components/layout";
 import { trpc } from "../utils/trpc";
 
 const Elections: NextPage = () => {
-  const [data, setData] = useState<
-    {
-      candidates: (Candidate & {
-        student: Student;
-      })[];
-      PositionName: string;
-      VotesCast: number;
-    }[]
-  >();
-  const { isLoading } = trpc.useQuery(["candidate.getVotes"], {
+  const { isLoading, data } = trpc.useQuery(["candidate.getVotes"], {
     onSuccess(data) {
-      if (data.votes) {
-        setData(data.votes);
+      if (data) {
+        console.log("success")
       } else {
         console.log("error occured");
       }
     },
   });
+  console.log({ data })
   const votePercentage = (voteCount: number, VotesCast: number) => {
     if (voteCount == 0 || VotesCast == 0) {
       return 0;
     }
-    return Math.floor((voteCount / VotesCast) * 100);
+    return ((voteCount / VotesCast) * 100);
   };
   const votes = (): ReactNode => {
-    return data?.map((val, index) => {
+    return data?.votes?.map((val, index) => {
       const positionTitle = val.PositionName;
       const votes = val.candidates.map((val2, index2) => {
         return (
@@ -42,7 +34,7 @@ const Elections: NextPage = () => {
                   {val2.student.SirName}
                 </div>
                 <div className="stat-value">
-                  {votePercentage(val2.VoteCount, val.VotesCast)}%
+                  {votePercentage(val2.VoteCount, data.votesCast)}%
                 </div>
 
                 <div className="stat-desc">
