@@ -38,29 +38,42 @@ const Vote: NextPage = () => {
     voterId: string,
     positionId: string
   ) => {
+    let positionVotedToken = localStorage.getItem(positionId)
     let token = localStorage.getItem(`${voterId + candidateId}`);
-    if (token == "true") {
-      setStatus("you already voted for that candidate ");
+    if (positionVotedToken == "true") {
+
+      setStatus("you already cast a vote for that position");
       setShowToast(true);
       setTimeout(() => {
         setShowToast(false);
       }, 5000);
     } else {
-      voteMutation
-        .mutateAsync({
-          candidateId: candidateId,
-          voterId: voterId,
-          positionId: positionId,
-        })
-        .then(() => {
-          setStatus("vote casted");
-          setShowToast(true);
-          setTimeout(() => {
-            setShowToast(false);
-          }, 5000);
-          localStorage.setItem(`${voterId + candidateId}`, "true");
-        });
+      if (token == "true") {
+        setStatus("you already voted for that candidate ");
+        setShowToast(true);
+        setTimeout(() => {
+          setShowToast(false);
+        }, 5000);
+      } else {
+        voteMutation
+          .mutateAsync({
+            candidateId: candidateId,
+            voterId: voterId,
+            positionId: positionId,
+          })
+          .then(() => {
+            setStatus("vote casted");
+            setShowToast(true);
+            setTimeout(() => {
+              setShowToast(false);
+            }, 5000);
+            localStorage.setItem(`${voterId + candidateId}`, "true");
+            localStorage.setItem(positionId, "true")
+          });
+      }
+
     }
+
   };
   const router = useRouter();
   useEffect(() => {
@@ -91,7 +104,7 @@ const Vote: NextPage = () => {
               <div className="card-body">
                 <div className="grid card-title m-3">
                   <h1 className="card-title justify-self-center">{`${val2.student.FirstName} ${val2.student.SirName} `}</h1>
-                  
+
                 </div>
                 <h3 className="card-title underline decoration-primary">{`${val2.student.FirstName} ${val2.student.SirName}'s manifesto`}</h3>
 
@@ -120,7 +133,7 @@ const Vote: NextPage = () => {
                       }, 5000);
                     }}
                   >
-                    
+
                     copy to display name clipboard
                     <MdOutlineContentCopy className="ml-4" />
                   </button>
